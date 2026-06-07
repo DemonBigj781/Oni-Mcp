@@ -30,8 +30,15 @@ namespace OniMcp
             OniMcpOptions.Reload();
             PUtil.InitLibrary();
             Localization.RegisterForTranslation(typeof(STRINGS));
-            new PLocalization().Register(modAssembly);
-            new POptions().RegisterOptions(this, typeof(OniMcpOptions));
+            try
+            {
+                new PLocalization().Register(modAssembly);
+                new POptions().RegisterOptions(this, typeof(OniMcpOptions));
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[OniMcp] PLib registration skipped during OnLoad: {e}");
+            }
 
             // 注册 Harmony Patch
             harmony.PatchAll();
