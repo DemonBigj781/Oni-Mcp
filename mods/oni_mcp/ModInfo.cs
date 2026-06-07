@@ -5,6 +5,7 @@ using OniMcp.Server;
 using OniMcp.Support;
 using OniMcp.Tools;
 using PeterHan.PLib.Core;
+using PeterHan.PLib.Database;
 using PeterHan.PLib.Options;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace OniMcp
             OniMcpPaths.Initialize(path, assembly);
             OniMcpOptions.Reload();
             PUtil.InitLibrary();
+            Localization.RegisterForTranslation(typeof(STRINGS));
+            new PLocalization().Register(assembly);
             new POptions().RegisterOptions(this, typeof(OniMcpOptions));
 
             // 注册 Harmony Patch
