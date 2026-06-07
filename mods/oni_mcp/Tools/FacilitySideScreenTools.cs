@@ -633,7 +633,7 @@ namespace OniMcp.Tools
         private static bool IsValidLoreBearer(GameObject go)
         {
             var lore = go?.GetComponent<LoreBearer>();
-            return lore != null && !lore.hideLore && (lore.useDefaultLore || !lore.poiOverrideLoreUnlockId.IsNullOrWhiteSpace());
+            return lore != null && !LoreHide(lore) && (LoreUseDefault(lore) || !LoreOverrideUnlockId(lore).IsNullOrWhiteSpace());
         }
 
         private static Dictionary<string, object> LoreBearerInfo(GameObject go)
@@ -643,11 +643,51 @@ namespace OniMcp.Tools
             result["interactable"] = lore.SidescreenButtonInteractable();
             result["buttonText"] = lore.SidescreenButtonText;
             result["buttonTooltip"] = lore.SidescreenButtonTooltip;
-            result["hideLore"] = lore.hideLore;
-            result["useDefaultLore"] = lore.useDefaultLore;
-            result["overrideLoreUnlockId"] = lore.poiOverrideLoreUnlockId;
+            result["hideLore"] = LoreHide(lore);
+            result["useDefaultLore"] = LoreUseDefault(lore);
+            result["overrideLoreUnlockId"] = LoreOverrideUnlockId(lore);
             result["sortOrder"] = lore.GetSideScreenSortOrder();
             return result;
+        }
+
+        private static bool LoreHide(LoreBearer lore)
+        {
+            return ReadBoolMember(lore, "hideLore", false);
+        }
+
+        private static bool LoreUseDefault(LoreBearer lore)
+        {
+            return ReadBoolMember(lore, "useDefaultLore", true);
+        }
+
+        private static string LoreOverrideUnlockId(LoreBearer lore)
+        {
+            return ReadStringMember(lore, "poiOverrideLoreUnlockId", null);
+        }
+
+        private static bool ReadBoolMember(object target, string name, bool fallback)
+        {
+            object value = ReadMember(target, name);
+            return value is bool ? (bool)value : fallback;
+        }
+
+        private static string ReadStringMember(object target, string name, string fallback)
+        {
+            object value = ReadMember(target, name);
+            return value == null ? fallback : value.ToString();
+        }
+
+        private static object ReadMember(object target, string name)
+        {
+            if (target == null || string.IsNullOrEmpty(name))
+                return null;
+            const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+            var type = target.GetType();
+            var property = type.GetProperty(name, flags);
+            if (property != null)
+                return property.GetValue(target, null);
+            var field = type.GetField(name, flags);
+            return field == null ? null : field.GetValue(target);
         }
 
         private static Dictionary<string, object> TelepadInfo(Telepad telepad, bool includeVictory)

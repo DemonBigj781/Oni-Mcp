@@ -596,6 +596,7 @@ namespace OniMcp.Tools
                     ["screenshot"] = screenshot ? (object)new Dictionary<string, object>
                     {
                         ["path"] = request.ScreenshotPath,
+                        ["url"] = BuildScreenshotUrl(request.ScreenshotPath),
                         ["readyAfterFrames"] = waitFrames + 1,
                         ["cycle"] = GameUtil.GetCurrentCycle(),
                         ["screen"] = new { width = Screen.width, height = Screen.height },
@@ -686,18 +687,27 @@ namespace OniMcp.Tools
             return new Dictionary<string, object>
             {
                 ["path"] = path,
+                ["url"] = BuildScreenshotUrl(path),
                 ["cycle"] = GameUtil.GetCurrentCycle(),
                 ["screen"] = new { width = Screen.width, height = Screen.height },
                 ["cleanup"] = cleanup
             };
         }
 
-        private static string ScreenshotDirectory
+        internal static string ScreenshotDirectory
         {
             get
             {
                 return Path.Combine(Path.GetTempPath(), "oni-mcp", "screenshots");
             }
+        }
+
+        private static string BuildScreenshotUrl(string path)
+        {
+            string fileName = Path.GetFileName(path ?? "");
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+            return (OniMcpOptions.Current.EndpointUrl ?? "").TrimEnd('/') + "/screenshots/" + Uri.EscapeDataString(fileName);
         }
 
         private static Dictionary<string, object> CleanupTemporaryScreenshots(int reservedSlots)

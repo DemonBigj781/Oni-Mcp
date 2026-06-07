@@ -1293,25 +1293,9 @@ namespace OniMcp.Tools
 
         private static Dictionary<string, object> CompactAmounts(MinionIdentity dupe)
         {
-            var result = new Dictionary<string, object>();
-            var amounts = dupe.GetComponent<Amounts>();
-            if (amounts == null)
-                return result;
-
-            foreach (var amount in amounts.ModifierList)
-            {
-                if (amount == null || amount.amount == null)
-                    continue;
-                double value = Math.Round(ToolUtil.SafeFloat(amount.value), 2);
-                if (Math.Abs(value) < 0.005d)
-                    continue;
-                string key = CleanStatName(amount.amount.Name, amount.amount.Id);
-                if (string.IsNullOrWhiteSpace(key))
-                    continue;
-                result[key] = value;
-            }
-
-            return result
+            return DupeNeedUtil.GetCoreNeedValues(dupe)
+                .Select(kv => new KeyValuePair<string, object>(kv.Key, Math.Round(ToolUtil.SafeFloat(kv.Value), 2)))
+                .Where(kv => Math.Abs(Convert.ToDouble(kv.Value)) >= 0.005d)
                 .OrderByDescending(kv => Math.Abs(Convert.ToDouble(kv.Value)))
                 .ThenBy(kv => kv.Key)
                 .Take(20)
@@ -1465,27 +1449,15 @@ namespace OniMcp.Tools
 
         private static KeyNeeds KeyNeedValues(MinionIdentity dupe)
         {
-            var result = new KeyNeeds();
-            var amounts = dupe.GetComponent<Amounts>();
-            if (amounts == null)
-                return result;
-
-            foreach (var amount in amounts.ModifierList)
+            return new KeyNeeds
             {
-                if (amount == null || amount.amount == null)
-                    continue;
-                string id = amount.amount.Id ?? "";
-                string name = amount.amount.Name ?? "";
-                float value = ToolUtil.SafeFloat(amount.value);
-                if (Contains(id, "Stamina") || Contains(name, "Stamina")) result.Stamina = value;
-                else if (Contains(id, "Calories") || Contains(name, "Calories")) result.Calories = value;
-                else if (Contains(id, "Stress") || Contains(name, "Stress")) result.Stress = value;
-                else if (Contains(id, "Bladder") || Contains(name, "Bladder")) result.Bladder = value;
-                else if (Contains(id, "Breath") || Contains(name, "Breath")) result.Breath = value;
-                else if (Contains(id, "Temperature") || Contains(name, "Temperature")) result.BodyTemperature = value;
-            }
-
-            return result;
+                Stamina = DupeNeedUtil.GetAmountValue(dupe, "Stamina"),
+                Calories = DupeNeedUtil.GetAmountValue(dupe, "Calories"),
+                Stress = DupeNeedUtil.GetAmountValue(dupe, "Stress"),
+                Bladder = DupeNeedUtil.GetAmountValue(dupe, "Bladder"),
+                Breath = DupeNeedUtil.GetAmountValue(dupe, "Breath"),
+                BodyTemperature = DupeNeedUtil.GetAmountValue(dupe, "Temperature")
+            };
         }
 
         private static string SafeString(Func<string> getter, string fallback)
@@ -1919,16 +1891,8 @@ namespace OniMcp.Tools
 
         private static Dictionary<string, object> GetNeedsSummary(MinionIdentity dupe)
         {
-            var amounts = new Dictionary<string, object>();
-            var amountInstance = dupe.GetComponent<Amounts>();
-            if (amountInstance != null)
-            {
-                foreach (var amount in amountInstance.ModifierList)
-                {
-                    if (amount == null) continue;
-                    amounts[amount.amount.Name] = Math.Round(ToolUtil.SafeFloat(amount.value), 2);
-                }
-            }
+            var amounts = DupeNeedUtil.GetCoreNeedValues(dupe)
+                .ToDictionary(kv => kv.Key, kv => (object)Math.Round(ToolUtil.SafeFloat(kv.Value), 2));
 
             return new Dictionary<string, object>
             {

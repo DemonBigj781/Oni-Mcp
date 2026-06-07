@@ -315,14 +315,14 @@ namespace OniMcp
                 // The OnKeyDown patch below keeps it away from raw action-array indexing.
                 Action.NumActions,
                 "OniMcpEditMarker",
-                "MCP agent 工具",
+                "MCP agent tools",
                 true);
 
             if (mcpTools.tools.Count > 0)
             {
                 var tool = mcpTools.tools[0];
-                tool.text = "编辑标记";
-                tool.tooltip = "框选区域，输入修改提示词，然后让 MCP 客户端 agent 先计划再行动";
+                tool.text = "Edit Mark";
+                tool.tooltip = "Select an area, enter an edit prompt, then let the MCP client agent plan before acting";
                 tool.onSelectCallback = EditMarkerTool.ActivateFromMenu;
             }
 

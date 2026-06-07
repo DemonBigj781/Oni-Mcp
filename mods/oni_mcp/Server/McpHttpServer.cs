@@ -180,6 +180,12 @@ namespace OniMcp.Server
                 string sessionId = request.Headers["Mcp-Session-Id"];
                 string protocolVersion = request.Headers["Mcp-Protocol-Version"];
 
+                if ((request.HttpMethod == "GET" || request.HttpMethod == "HEAD") && IsScreenshotRequest(request, out var screenshotFileName))
+                {
+                    HandleScreenshotRequest(response, screenshotFileName, request.HttpMethod == "HEAD");
+                    return;
+                }
+
                 if (request.HttpMethod == "HEAD")
                 {
                     SetResponseProtocolVersion(response, sessionId);
@@ -420,6 +426,65 @@ namespace OniMcp.Server
                 }
                 catch { }
             }
+        }
+
+        private static bool IsScreenshotRequest(HttpListenerRequest request, out string fileName)
+        {
+            fileName = null;
+            string path = request.Url?.AbsolutePath ?? "";
+            const string prefix = "/mcp/screenshots/";
+            if (!path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            string encodedName = path.Substring(prefix.Length);
+            if (string.IsNullOrWhiteSpace(encodedName) || encodedName.IndexOf('/') >= 0)
+                return true;
+
+            string decodedName;
+            try
+            {
+                decodedName = Uri.UnescapeDataString(encodedName);
+            }
+            catch
+            {
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(decodedName)
+                || decodedName.IndexOfAny(new[] { '/', '\\' }) >= 0
+                || !decodedName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                || decodedName != Path.GetFileName(decodedName))
+                return true;
+
+            fileName = decodedName;
+            return true;
+        }
+
+        private void HandleScreenshotRequest(HttpListenerResponse response, string fileName, bool headersOnly)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                SendJson(response, JsonRpcResponse.MakeError(null, McpErrorCode.InvalidRequest, "Invalid screenshot filename"), 400);
+                return;
+            }
+
+            string path = Path.Combine(CameraTools.ScreenshotDirectory, fileName);
+            if (!File.Exists(path))
+            {
+                SendJson(response, JsonRpcResponse.MakeError(null, McpErrorCode.InvalidRequest, "Screenshot not found"), 404);
+                return;
+            }
+
+            byte[] buffer = File.ReadAllBytes(path);
+            response.StatusCode = 200;
+            response.ContentType = "image/png";
+            response.ContentLength64 = buffer.Length;
+            response.Headers["Cache-Control"] = "no-store";
+            if (string.IsNullOrEmpty(response.Headers["Mcp-Protocol-Version"]))
+                response.Headers["Mcp-Protocol-Version"] = CurrentProtocolVersion;
+            if (!headersOnly)
+                response.OutputStream.Write(buffer, 0, buffer.Length);
+            response.Close();
         }
 
         private void HandleGet(HttpListenerRequest request, HttpListenerResponse response, string sessionId)

@@ -191,15 +191,7 @@ namespace OniMcp.Tools
 
         private static float AmountValue(MinionIdentity dupe, string id)
         {
-            var amounts = dupe?.GetComponent<Klei.AI.Amounts>();
-            if (amounts == null)
-                return 0f;
-            foreach (var amount in amounts.ModifierList)
-            {
-                if (amount != null && amount.amount.Id == id)
-                    return ToolUtil.SafeFloat(amount.value);
-            }
-            return 0f;
+            return DupeNeedUtil.GetAmountValue(dupe, id);
         }
 
         private static Dictionary<string, object> BuildDupeResult(List<DupeSnapshot> dupes, int limit, string profile)

@@ -973,14 +973,14 @@ namespace OniMcp.Tools
         public static List<McpResourceInfo> GetResourceInfos()
         {
             return _resources
-                .Select(resource => resource.Info)
+                .Select(resource => EnglishMetadata.ResourceInfo(resource.Info))
                 .OrderBy(resource => resource.Uri)
                 .ToList();
         }
 
         public static List<McpResourceTemplateInfo> GetResourceTemplateInfos()
         {
-            return _templates.OrderBy(template => template.UriTemplate).ToList();
+            return _templates.Select(EnglishMetadata.ResourceTemplateInfo).OrderBy(template => template.UriTemplate).ToList();
         }
 
         public static ReadResourceResult ReadResource(string uri)

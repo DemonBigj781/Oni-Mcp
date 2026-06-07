@@ -396,9 +396,10 @@ namespace OniMcp.Tools
             var sicknesses = dupe.gameObject.GetSicknesses();
             var sicknessItems = SicknessList(sicknesses);
             var medicalBed = FindAssignedMedicalBed(dupe);
-            var amounts = dupe.GetComponent<Amounts>();
-            var stress = amounts?.Get(Db.Get().Amounts.Stress);
-            var radiation = Game.IsDlcActiveForCurrentSave("EXPANSION1_ID") ? amounts?.Get(Db.Get().Amounts.RadiationBalance) : null;
+            float stress = DupeNeedUtil.GetAmountValue(dupe, "Stress");
+            object radiation = Game.IsDlcActiveForCurrentSave("EXPANSION1_ID")
+                ? (object)Math.Round(DupeNeedUtil.GetAmountValue(dupe, "RadiationBalance"), 2)
+                : null;
             bool injured = health != null && health.hitPoints < health.maxHitPoints;
             bool sick = sicknessItems.Count > 0;
             return new Dictionary<string, object>
@@ -406,7 +407,7 @@ namespace OniMcp.Tools
                 ["id"] = dupe.GetComponent<KPrefabID>()?.InstanceID ?? -1,
                 ["name"] = dupe.GetProperName(),
                 ["worldId"] = dupe.GetMyWorldId(),
-                ["needsMedicalAttention"] = injured || sick || (radiation != null && radiation.value > 0f),
+                ["needsMedicalAttention"] = injured || sick || (radiation is double && (double)radiation > 0d),
                 ["health"] = health == null ? null : new Dictionary<string, object>
                 {
                     ["hitPoints"] = Math.Round(health.hitPoints, 2),
@@ -414,8 +415,8 @@ namespace OniMcp.Tools
                     ["percent"] = Math.Round(health.hitPoints / Math.Max(1f, health.maxHitPoints) * 100f, 1)
                 },
                 ["sicknesses"] = sicknessItems,
-                ["stress"] = stress == null ? (object)null : Math.Round(stress.value, 2),
-                ["radiationBalance"] = radiation == null ? (object)null : Math.Round(radiation.value, 2),
+                ["stress"] = Math.Round(stress, 2),
+                ["radiationBalance"] = radiation,
                 ["assignedMedicalBed"] = medicalBed == null ? null : AssignableSummary(medicalBed)
             };
         }

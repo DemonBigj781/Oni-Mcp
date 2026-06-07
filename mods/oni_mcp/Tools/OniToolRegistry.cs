@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OniMcp.Core;
+using OniMcp.Support;
 
 namespace OniMcp.Tools
 {
@@ -484,7 +485,7 @@ namespace OniMcp.Tools
                         properties[param.Key] = new SchemaProperty
                         {
                             Type = param.Value.Type,
-                            Description = param.Value.Description,
+                            Description = EnglishMetadata.ParameterDescription(param.Key, param.Value),
                             Enum = param.Value.SchemaEnumValues
                         };
                         if (param.Value.Required)
@@ -615,7 +616,7 @@ namespace OniMcp.Tools
 
         public static string FormatDescription(McpTool tool)
         {
-            return $"[{tool.Group}/{tool.Mode}/{tool.Risk}] {tool.Description}";
+            return $"[{tool.Group}/{tool.Mode}/{tool.Risk}] {EnglishMetadata.ToolDescription(tool)}";
         }
 
         private static string InferGroup(string name)

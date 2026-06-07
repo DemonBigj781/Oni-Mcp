@@ -218,15 +218,7 @@ namespace OniMcp.Tools
             float caloriesKcal = Components.Edibles.Items.Where(e => e != null).Sum(e => ToolUtil.SafeFloat(e.Calories) / 1000f);
             float stressMax = 0f;
             foreach (var dupe in Components.LiveMinionIdentities.Items)
-            {
-                var amounts = dupe?.GetComponent<Klei.AI.Amounts>();
-                if (amounts == null) continue;
-                foreach (var amount in amounts.ModifierList)
-                {
-                    if (amount != null && amount.amount.Id == "Stress")
-                        stressMax = Math.Max(stressMax, ToolUtil.SafeFloat(amount.value));
-                }
-            }
+                stressMax = Math.Max(stressMax, DupeNeedUtil.GetAmountValue(dupe, "Stress"));
 
             int activeWorldId = ClusterManager.Instance?.activeWorldId ?? 0;
             float oxygenKg = 0f;

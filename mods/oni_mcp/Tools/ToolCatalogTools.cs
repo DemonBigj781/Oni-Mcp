@@ -18,15 +18,15 @@ namespace OniMcp.Tools
                 Group = "tools",
                 Mode = "read",
                 Risk = "none",
-                Description = "获取 ONI MCP 工具分组、读写模式、风险等级和参数摘要；默认 brief 低 token 输出，按需传 detail=full 查看完整参数",
+                Description = "Get ONI MCP tool groups, read/write mode, risk level, and parameter summaries. Defaults to brief low-token output; use detail=full for full parameter schemas.",
                 Parameters = new Dictionary<string, McpToolParameter>
                 {
-                    ["group"] = new McpToolParameter { Type = "string", Description = "工具分组过滤，如 game、dupes、resources、orders", Required = false },
-                    ["query"] = new McpToolParameter { Type = "string", Description = "关键词或目标意图，匹配工具名、描述、标签、别名和参数", Required = false },
-                    ["mode"] = new McpToolParameter { Type = "string", Description = "read、write、execute 或 any", Required = false },
-                    ["risk"] = new McpToolParameter { Type = "string", Description = "none、low、medium、dangerous 或 any", Required = false },
-                    ["detail"] = new McpToolParameter { Type = "string", Description = "brief 极简；compact 返回摘要；full 返回完整参数 schema；默认 brief", Required = false, EnumValues = new List<string> { "brief", "compact", "full" } },
-                    ["limit"] = new McpToolParameter { Type = "integer", Description = "最多返回多少个工具；默认 80，最大 320。需要完整清单时显式传 limit=320", Required = false }
+                    ["group"] = new McpToolParameter { Type = "string", Description = "Tool group filter, for example game, dupes, resources, or orders.", Required = false },
+                    ["query"] = new McpToolParameter { Type = "string", Description = "Keyword or goal intent; matches tool names, descriptions, tags, aliases, and parameters.", Required = false },
+                    ["mode"] = new McpToolParameter { Type = "string", Description = "read, write, execute, or any.", Required = false },
+                    ["risk"] = new McpToolParameter { Type = "string", Description = "none, low, medium, dangerous, or any.", Required = false },
+                    ["detail"] = new McpToolParameter { Type = "string", Description = "Detail level: brief, compact, or full. Defaults to brief.", Required = false, EnumValues = new List<string> { "brief", "compact", "full" } },
+                    ["limit"] = new McpToolParameter { Type = "integer", Description = "Maximum tools to return. Defaults to 80; maximum 320. Use limit=320 for a full catalog.", Required = false }
                 },
                 Handler = args =>
                 {
@@ -97,17 +97,17 @@ namespace OniMcp.Tools
                 Group = "tools",
                 Mode = "read",
                 Risk = "none",
-                Description = "按关键词、分组、读写模式或风险等级检索 ONI MCP 工具；支持中英文意图词，brief 模式用于低 token 工具发现",
+                Description = "Search ONI MCP tools by keyword, group, read/write mode, or risk level. Brief mode is for low-token tool discovery.",
                 Aliases = new List<string> { "tool_search", "tools_find", "find_tools" },
-                Tags = new List<string> { "catalog", "search", "discovery", "intent", "low-token", "工具检索" },
+                Tags = new List<string> { "catalog", "search", "discovery", "intent", "low-token" },
                 Parameters = new Dictionary<string, McpToolParameter>
                 {
-                    ["query"] = new McpToolParameter { Type = "string", Description = "关键词或目标意图，可匹配工具名、描述、标签、别名和中英文同义词", Required = false },
-                    ["group"] = new McpToolParameter { Type = "string", Description = "工具分组过滤，如 game、dupes、resources、orders", Required = false },
-                    ["mode"] = new McpToolParameter { Type = "string", Description = "read、write、execute 或 any", Required = false },
-                    ["risk"] = new McpToolParameter { Type = "string", Description = "none、low、medium、dangerous 或 any", Required = false },
-                    ["detail"] = new McpToolParameter { Type = "string", Description = "返回细节：brief 极简，compact 名称/摘要/必填参数，full 完整参数 schema；默认 compact", Required = false, EnumValues = new List<string> { "brief", "compact", "full" } },
-                    ["limit"] = new McpToolParameter { Type = "integer", Description = "最多返回多少个工具，默认 20，最大 100", Required = false }
+                    ["query"] = new McpToolParameter { Type = "string", Description = "Keyword or goal intent; matches tool names, descriptions, tags, aliases, and synonyms.", Required = false },
+                    ["group"] = new McpToolParameter { Type = "string", Description = "Tool group filter, for example game, dupes, resources, or orders.", Required = false },
+                    ["mode"] = new McpToolParameter { Type = "string", Description = "read, write, execute, or any.", Required = false },
+                    ["risk"] = new McpToolParameter { Type = "string", Description = "none, low, medium, dangerous, or any.", Required = false },
+                    ["detail"] = new McpToolParameter { Type = "string", Description = "Detail level: brief, compact, or full. Defaults to compact.", Required = false, EnumValues = new List<string> { "brief", "compact", "full" } },
+                    ["limit"] = new McpToolParameter { Type = "integer", Description = "Maximum tools to return. Defaults to 20; maximum 100.", Required = false }
                 },
                 Handler = args =>
                 {
@@ -154,13 +154,13 @@ namespace OniMcp.Tools
                 Group = "tools",
                 Mode = "read",
                 Risk = "none",
-                Description = "按玩家目标生成低 token 工具使用指南：推荐资源、检索词、工具链和批量策略",
+                Description = "Generate a low-token tool-use guide for a player goal, including recommended resources, search terms, tool chains, and batch strategy.",
                 Aliases = new List<string> { "tools_intent_guide", "tool_route", "action_guide" },
-                Tags = new List<string> { "catalog", "intent", "routing", "planning", "batch", "low-token", "工具指南" },
+                Tags = new List<string> { "catalog", "intent", "routing", "planning", "batch", "low-token" },
                 Parameters = new Dictionary<string, McpToolParameter>
                 {
-                    ["goal"] = new McpToolParameter { Type = "string", Description = "玩家目标或操作意图，例如 缺氧、建造厕所、批量种植、设置自动化、发射火箭", Required = true },
-                    ["detail"] = new McpToolParameter { Type = "string", Description = "brief 或 compact；默认 brief", Required = false, EnumValues = new List<string> { "brief", "compact" } }
+                    ["goal"] = new McpToolParameter { Type = "string", Description = "Player goal or operation intent, for example oxygen shortage, build toilet, batch plant, configure automation, or launch rocket.", Required = true },
+                    ["detail"] = new McpToolParameter { Type = "string", Description = "brief or compact. Defaults to brief.", Required = false, EnumValues = new List<string> { "brief", "compact" } }
                 },
                 Handler = args =>
                 {
@@ -180,7 +180,7 @@ namespace OniMcp.Tools
                             "2. For gameplay formulas or edge-case mechanics, read oni://guide/mechanics or call guide_mechanics_query; combine it with database_query for current in-game codex facts.",
                             "3. If the player action surface is unclear, call tools_player_action_coverage with detail=brief and query=<goal>; then call tools_search with detail=brief for exact schemas.",
                             "4. Before player-like map actions, create or reuse a visible agent pointer with a stable agentId such as planner or builder; pass that same agentId through every agent_pointer_* call so the model remembers one pointer across the whole task.",
-                            "5. Use displayText on visible pointer actions whenever useful: jump/aim/select/click/drag can show short player-facing status like '准备铺线' or '标记挖掘'. Prefer displayText over a separate say call unless you need a longer bubble.",
+                            "5. Use displayText on visible pointer actions whenever useful: jump/aim/select/click/drag can show short player-facing status like 'Preparing wire' or 'Marking dig order'. Prefer displayText over a separate say call unless you need a longer bubble.",
                             "6. For player-like map actions, use the visible agent pointer flow: agent_pointer_get or agent_pointer_jump/aim_cell with agentId+displayText, agent_pointer_select_tool with the same agentId, then agent_pointer_left_click or agent_pointer_hold_left with confirm/dryRun and displayText. Multi-cell buildings use lower-left anchors and should be placed with one left_click per anchor.",
                             "7. For risky or multi-step work, write the plan in the response and use dryRun/validateOnly where available before executing.",
                             "8. Do not repeat the same write/execute call after a zero-effect result; re-read state or choose the correct tool. Verify with read resources after execution."
@@ -243,7 +243,7 @@ namespace OniMcp.Tools
                 ["mode"] = tool.Mode,
                 ["risk"] = tool.Risk,
                 ["score"] = score,
-                ["summary"] = tool.Description,
+                ["summary"] = EnglishMetadata.ToolDescription(tool),
                 ["required"] = tool.Parameters
                     .Where(kv => kv.Value.Required)
                     .Select(kv => kv.Key)
@@ -261,9 +261,9 @@ namespace OniMcp.Tools
                 ["group"] = tool.Group,
                 ["mode"] = tool.Mode,
                 ["risk"] = tool.Risk,
-                ["description"] = tool.Description,
+                ["description"] = EnglishMetadata.ToolDescription(tool),
                 ["aliases"] = tool.Aliases,
-                ["tags"] = tool.Tags,
+                ["tags"] = EnglishMetadata.Tags(tool.Tags),
                 ["parameters"] = tool.Parameters
                     .OrderBy(kv => kv.Key)
                     .ToDictionary(
@@ -271,7 +271,7 @@ namespace OniMcp.Tools
                         kv => new Dictionary<string, object>
                         {
                             ["type"] = kv.Value.Type,
-                            ["description"] = kv.Value.Description,
+                            ["description"] = EnglishMetadata.ParameterDescription(kv.Key, kv.Value),
                             ["required"] = kv.Value.Required,
                             ["enum"] = kv.Value.SchemaEnumValues
                         }),
@@ -318,10 +318,10 @@ namespace OniMcp.Tools
         private static string SearchNote(string detail)
         {
             if (detail == "full")
-                return "完整参数 schema。大批量检索建议先用 detail=brief 或 compact。";
+                return "Full parameter schema. For broad discovery, start with detail=brief or compact.";
             if (detail == "brief")
-                return "极简结果：name/g/m/r/req。需要摘要用 detail=compact；需要完整参数 schema 用 detail=full。";
-            return "紧凑结果包含摘要和必填参数；需要完整参数 schema 时用 detail=full 或 tools_manifest。";
+                return "Minimal result: name/g/m/r/req. Use detail=compact for summaries or detail=full for full parameter schemas.";
+            return "Compact results include summaries and required parameters. Use detail=full or tools_manifest for full parameter schemas.";
         }
 
         private static string ExpandQuery(string query)
@@ -495,7 +495,7 @@ namespace OniMcp.Tools
             };
             if (detail == "compact")
             {
-                result["keywords"] = guide.Keywords;
+                result["keywords"] = EnglishMetadata.Tags(guide.Keywords);
                 result["flow"] = guide.Flow;
             }
             return result;
@@ -516,14 +516,14 @@ namespace OniMcp.Tools
                     new[] { "mechanics", "formula", "heat", "oxygen", "food preservation", "ranching", "power", "automation", "机制", "公式", "热量", "制氧", "保鲜", "养殖", "电力", "自动化", "缺氧机制速查" },
                     new[] { "oni://guide/mechanics{?query,category,detail,limit}", "oni://tools/read/database_query{?query}", "oni://colony/summary", "oni://world/text-map{?profile=standard}" },
                     new[] { "guide_mechanics_query", "database_query", "colony_state_snapshot", "world_area_snapshot", "world_text_map", "power_summary", "building_power_ports", "thermal_overheat_risk_scan" },
-                    new[] { "guide_mechanics_query query=电解器入水温度", "guide_mechanics_query category=thermal query=隔热砖", "database_query query=<building_or_element>", "colony_state_snapshot profile=standard" },
+                    new[] { "guide_mechanics_query query=electrolyzer input water temperature", "guide_mechanics_query category=thermal query=insulated tile", "database_query query=<building_or_element>", "colony_state_snapshot profile=standard" },
                     "Use guide_mechanics_query for distilled player-tested formulas and edge cases; use database_query for the game's current codex/building/element facts; read live resources before applying advice to the current save.",
                     new[] { "query guide mechanics", "query in-game database if exact object stats matter", "read live save state", "calculate/adapt recommendation", "verify after any action" }),
                 new ToolGuide("map_area_orders",
                     new[] { "dig", "sweep", "mop", "water", "liquid", "spill", "disinfect", "cancel", "harvest", "地图", "挖掘", "清扫", "拖地", "地上的水", "液体", "区域" },
                     new[] { "oni://world/text-map{?profile=scan,format=json}", "oni://tools/read/priorities_list" },
                     new[] { "world_area_snapshot", "layout_candidates", "world_text_map", "agent_pointer_get", "agent_pointer_jump", "agent_pointer_select_tool", "agent_pointer_left_click", "agent_pointer_hold_left", "orders_dig_area", "orders_sweep_area", "orders_mop_area", "orders_cancel_area", "orders_harvest_area", "tools_call_many" },
-                    new[] { "agent_pointer_get agentId=planner", "world_area_snapshot preset=planning x1=... y1=... x2=... y2=... chunksOnly=true includeChunks=true for large areas", "world_text_map areaId=blk1 profile=scan encoding=rle", "agent_pointer_jump agentId=planner x=... y=... displayText=移动到施工起点", "agent_pointer_select_tool agentId=planner tool=dig|mop|sweep|cancel|harvest displayText=选择区域命令", "agent_pointer_hold_left agentId=planner direction=right length=... confirm=true displayText=标记这条直线" },
+                    new[] { "agent_pointer_get agentId=planner", "world_area_snapshot preset=planning x1=... y1=... x2=... y2=... chunksOnly=true includeChunks=true for large areas", "world_text_map areaId=blk1 profile=scan encoding=rle", "agent_pointer_jump agentId=planner x=... y=... displayText=Move to construction start", "agent_pointer_select_tool agentId=planner tool=dig|mop|sweep|cancel|harvest displayText=Select area order", "agent_pointer_hold_left agentId=planner direction=right length=... confirm=true displayText=Mark this line" },
                     "Use world_area_snapshot preset=planning or layout_candidates before terrain/base layout work. Prefer pointer actions for orders so the game shows the agent mouse and tool badge. Create/reuse one stable agentId and pass displayText on visible actions to keep the player oriented. Use orders_mop_area for water/liquid on the floor; never use sweep for liquids. Do not use orders_attack for digging.",
                     new[] { "read planning snapshot", "create/reuse pointer agentId=planner", "jump/aim pointer with displayText", "select order tool with displayText", "left-click or hold-left with displayText", "verify with text map" }),
                 new ToolGuide("critter_removal",
@@ -537,7 +537,7 @@ namespace OniMcp.Tools
                     new[] { "build", "building", "construct", "config", "toilet", "outhouse", "plumbing", "wire", "power", "placement", "footprint", "anchor", "建造", "建筑", "配置", "厕所", "茅厕", "卫生间", "洗手间", "电线", "接线", "供电", "空位", "候选", "footprint" },
                     new[] { "oni://buildings/defs{?query}", "oni://buildings/materials{?prefabId}", "oni://power/ports{?x1,y1,x2,y2,query}", "oni://buildings/configurables", "oni://automation/controls", "oni://world/text-map{?profile=scan,format=json}" },
                     new[] { "build_placement_candidates", "build_preview", "building_power_ports", "world_area_snapshot", "layout_candidates", "buildings_search_defs", "buildings_materials", "agent_pointer_get", "agent_pointer_jump", "agent_pointer_select_tool", "agent_pointer_left_click", "agent_pointer_hold_left", "buildings_config_list", "buildings_config_batch_set", "tools_call_many" },
-                    new[] { "building_power_ports x1=... y1=... x2=... y2=... query=<battery|generator|consumer>", "build_placement_candidates prefabId=<building> areaId=<area> limit=8", "build_preview prefabId=<building> x=<anchorX> y=<anchorY>", "world_area_snapshot preset=planning x1=... y1=... x2=... y2=...", "buildings_search_defs query=wire|toilet", "buildings_materials prefabId=Wire", "agent_pointer_jump agentId=builder x=<portX> y=<portY> displayText=移动到电力接口格", "agent_pointer_select_tool agentId=builder tool=build prefabId=Wire material=auto displayText=选择电线蓝图", "agent_pointer_hold_left agentId=builder direction=right length=12 confirm=true displayText=从接口格开始铺线" },
+                    new[] { "building_power_ports x1=... y1=... x2=... y2=... query=<battery|generator|consumer>", "build_placement_candidates prefabId=<building> areaId=<area> limit=8", "build_preview prefabId=<building> x=<anchorX> y=<anchorY>", "world_area_snapshot preset=planning x1=... y1=... x2=... y2=...", "buildings_search_defs query=wire|toilet", "buildings_materials prefabId=Wire", "agent_pointer_jump agentId=builder x=<portX> y=<portY> displayText=Move to power port", "agent_pointer_select_tool agentId=builder tool=build prefabId=Wire material=auto displayText=Select wire blueprint", "agent_pointer_hold_left agentId=builder direction=right length=12 confirm=true displayText=Run wire from the port" },
                     "Use building_power_ports before power wiring so the line starts or ends on the exact input/output port cell; verify the returned port hasWire after placement. Use build_placement_candidates first when the task is to find where a building can fit. Use build_preview for one anchor and world_area_snapshot/layout_candidates only for broader terrain context. Use buildings_search_defs to choose prefab/facade and material=auto unless explicit material is justified. Build through the pointer flow: create/reuse one stable agentId, jump/aim with displayText, select build tool with prefab/material and displayText, then left-click or hold-left for 1x1 lines. For multi-cell furniture/machines, treat placement.anchor=lowerLeftCell as the anchor, dry-run if uncertain, and use one left_click per anchor.",
                     new[] { "scan area for anchors", "pick top candidate", "preview one anchor", "create/reuse pointer agentId=builder", "jump/aim pointer with displayText", "select build tool with displayText", "left-click or hold-left with displayText", "verify placement", "batch config if needed" }),
                 new ToolGuide("dupes_and_assignments",
@@ -587,7 +587,7 @@ namespace OniMcp.Tools
                     new[] { "oni://research/status", "oni://story/poi-tech-unlocks" },
                     new[] { "research_status", "research_list", "research_set", "research_clear", "poi_tech_unlocks_list", "poi_tech_unlock_control", "ui_management_open" },
                     new[] { "research tech queue cancel clear portal poi tech unlock information transmission" },
-                    "Use research_list for normal tech research. Use poi_tech_unlocks_list/control for Research Portal 信息传送通道 unlock chores; control requires confirm=true.",
+                    "Use research_list for normal tech research. Use poi_tech_unlocks_list/control for Research Portal information-transmission unlock chores; control requires confirm=true.",
                     new[] { "read research_status or poi_tech_unlocks_list", "resolve exact tech or portal target", "set research queue or start/cancel portal chore", "verify status" }),
                 new ToolGuide("rockets",
                     new[] { "rocket", "space", "launch", "crew", "cargo", "module", "火箭", "太空", "发射", "乘员" },
@@ -675,19 +675,19 @@ namespace OniMcp.Tools
                 case "agent_pointer_aim_cell":
                 case "agent_pointer_aim_world":
                 case "agent_pointer_jump":
-                    return "移动到目标位置";
+                    return "Move to target position";
                 case "agent_pointer_nudge":
-                    return "微调指针位置";
+                    return "Nudge pointer position";
                 case "agent_pointer_select_tool":
-                    return "选择操作工具";
+                    return "Select action tool";
                 case "agent_pointer_left_click":
-                    return "确认这个格子";
+                    return "Confirm this cell";
                 case "agent_pointer_hold_left":
-                    return "拖拽标记直线";
+                    return "Drag to mark a line";
                 case "agent_pointer_jump_point_set":
-                    return "记住这个位置";
+                    return "Remember this position";
                 default:
-                    return "正在操作指针";
+                    return "Operating pointer";
             }
         }
 
@@ -695,37 +695,37 @@ namespace OniMcp.Tools
         {
             switch (group)
             {
-                case "tools": return "工具目录、搜索和能力发现。";
-                case "database": return "游戏内置 Database/百科条目查询，以及结构化玩家机制/公式速查。";
-                case "server": return "MCP 服务状态和连接信息。";
-                case "game": return "游戏时间、暂停、速度、红色警戒/紧急模式和截图。";
-                case "camera": return "相机视角、聚焦和观察控制。";
-                case "map": return "地图上的提示、标记和可视反馈。";
-                case "ui": return "管理面板、覆盖层、建造分类、百科和安全 UI Action 入口。";
-                case "sandbox": return "沙盒/调试模式下的生成、刷元素和清除操作。";
-                case "colony": return "殖民地总体状态、告警和诊断。";
-                case "diagnostics": return "诊断条件、过程状态和异常/风险检查。";
-                case "dupes": return "复制人列表、属性、需求、改名和自动命名。";
-                case "schedules": return "日程读取、区块编辑和复制人分配。";
-                case "resources": return "资源、食物、库存和储存过滤器。";
-                case "diet": return "复制人饮食许可、食物策略和口粮控制。";
-                case "filters": return "单选元素过滤器和树形/平铺多选过滤器。";
-                case "controls": return "方向、少量选项、广播频道等通用侧屏控件。";
-                case "automation": return "自动化、逻辑、传感器阈值和自动化侧屏设置。";
-                case "buildings": return "建筑查询、蓝图、运行状态、侧屏配置、优先级和拆除。";
-                case "production": return "制作站、精炼、厨房等配方队列和生产设置。";
-                case "orders": return "对地图区域下达清扫、挖掘等命令。";
-                case "ranching": return "小动物抓捕、放生和牧场相关命令。";
-                case "farming": return "植物收获、铲除、种植选择和种植槽状态。";
-                case "medical": return "医疗床、诊疗阈值和护理相关分配。";
-                case "power": return "电力网络、电池、发电/耗电统计和电力接口格。";
-                case "rooms": return "房间识别、房间类型和士气相关概览。";
-                case "rockets": return "火箭、发射台、舱组、乘员货物和飞行控制。";
-                case "space": return "星图、望远镜、太空目标和裂隙相关操作。";
-                case "story": return "故事建筑、遗迹设施、传送器和特殊剧情对象。";
-                case "research": return "研究状态、科技列表、研究队列设置和取消。";
-                case "world": return "地图格子、元素、温度、气液固统计。";
-                default: return "未归类工具。";
+                case "tools": return "Tool catalog, search, and capability discovery.";
+                case "database": return "In-game database/codex queries and structured player mechanics reference.";
+                case "server": return "MCP server status and connection information.";
+                case "game": return "Game time, pause, speed, red alert/emergency mode, and screenshots.";
+                case "camera": return "Camera view, focus, and observation controls.";
+                case "map": return "Map hints, markers, and visible feedback.";
+                case "ui": return "Management panels, overlays, build categories, codex, and safe UI actions.";
+                case "sandbox": return "Spawn, brush, and clear operations in sandbox/debug mode.";
+                case "colony": return "Overall colony state, alerts, and diagnostics.";
+                case "diagnostics": return "Diagnostic conditions, process state, exceptions, and risk checks.";
+                case "dupes": return "Duplicant lists, attributes, needs, naming, and auto-naming.";
+                case "schedules": return "Schedule reads, block edits, and duplicant assignments.";
+                case "resources": return "Resources, food, inventory, and storage filters.";
+                case "diet": return "Duplicant consumable permissions, food policy, and ration control.";
+                case "filters": return "Single-select element filters and tree/tile multi-select filters.";
+                case "controls": return "Generic side-screen controls such as direction, small option sets, and broadcast channels.";
+                case "automation": return "Automation, logic, sensor thresholds, and automation side-screen settings.";
+                case "buildings": return "Building queries, blueprints, operating state, side-screen config, priority, and deconstruction.";
+                case "production": return "Fabricators, refining, kitchens, recipe queues, and production settings.";
+                case "orders": return "Map-area orders such as sweep, dig, mop, harvest, and cancel.";
+                case "ranching": return "Critter capture, release, dropoffs, incubators, and ranch commands.";
+                case "farming": return "Plant harvest, uproot, planting selection, and farm tile state.";
+                case "medical": return "Medical beds, treatment thresholds, and care assignments.";
+                case "power": return "Power networks, batteries, generation/load statistics, and power port cells.";
+                case "rooms": return "Room detection, room types, and morale-room overview.";
+                case "rockets": return "Rockets, launch pads, interior groups, crew, cargo, and flight control.";
+                case "space": return "Starmap, telescopes, space destinations, and temporal-tear operations.";
+                case "story": return "Story buildings, ruins facilities, telepads, and special narrative objects.";
+                case "research": return "Research state, technology lists, queue setup, and cancellation.";
+                case "world": return "Map cells, elements, temperature, and gas/liquid/solid statistics.";
+                default: return "Uncategorized tools.";
             }
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OniMcp.Core;
+using OniMcp.Support;
 
 namespace OniMcp.Tools
 {
@@ -15,128 +16,128 @@ namespace OniMcp.Tools
             new McpPrompt
             {
                 Name = "colony_triage",
-                Title = "殖民地快速诊断",
-                Description = "快速体检当前殖民地，优先找会导致死亡、停电、缺氧或断粮的问题。",
+                Title = "Colony Triage",
+                Description = "Quickly inspect the current colony and prioritize problems that can cause death, power loss, oxygen loss, or food failure.",
                 Arguments = new List<McpPromptArgument>
                 {
-                    new McpPromptArgument { Name = "focus", Title = "关注点", Description = "可选关注点，例如 oxygen、food、power、dupes。", Required = false }
+                    new McpPromptArgument { Name = "focus", Title = "Focus", Description = "Optional focus, for example oxygen, food, power, or dupes.", Required = false }
                 },
                 Builder = args => BuildResult(
-                    "殖民地快速诊断流程",
-                    "你是 Oxygen Not Included 殖民地诊断助手。先读取 oni://colony/status、oni://colony/diagnostics、oni://colony/alerts 和 oni://resources/food，再按风险排序给出下一步行动。" +
-                    Optional(args, "focus", " 重点关注：{0}。") +
-                    " 对会修改存档的动作，只提出建议，除非用户明确要求执行。")
+                    "Colony triage workflow",
+                    "You are an Oxygen Not Included colony triage assistant. Read oni://colony/status, oni://colony/diagnostics, oni://colony/alerts, and oni://resources/food first, then rank the next actions by risk." +
+                    Optional(args, "focus", " Focus: {0}.") +
+                    " For actions that modify the save, recommend them only unless the user explicitly asks you to execute.")
             },
             new McpPrompt
             {
                 Name = "next_cycle_plan",
-                Title = "下一周期计划",
-                Description = "根据当前状态生成下一周期行动计划。",
+                Title = "Next Cycle Plan",
+                Description = "Generate a next-cycle action plan from the current colony state.",
                 Arguments = new List<McpPromptArgument>
                 {
-                    new McpPromptArgument { Name = "objective", Title = "目标", Description = "目标，例如 stabilize oxygen、expand food、research。", Required = false },
-                    new McpPromptArgument { Name = "riskTolerance", Title = "风险偏好", Description = "风险偏好：low、medium、high。", Required = false }
+                    new McpPromptArgument { Name = "objective", Title = "Objective", Description = "Goal, for example stabilize oxygen, expand food, or research.", Required = false },
+                    new McpPromptArgument { Name = "riskTolerance", Title = "Risk Tolerance", Description = "Risk tolerance: low, medium, or high.", Required = false }
                 },
                 Builder = args => BuildResult(
-                    "下一周期规划流程",
-                    "读取 oni://colony/summary、oni://resources/inventory、oni://research/status、oni://schedules 和 oni://dupes。输出一个紧凑的下一周期计划：立即处理、可排队、暂缓。" +
-                    Optional(args, "objective", " 目标：{0}。") +
-                    Optional(args, "riskTolerance", " 风险偏好：{0}。"))
+                    "Next-cycle planning workflow",
+                    "Read oni://colony/summary, oni://resources/inventory, oni://research/status, oni://schedules, and oni://dupes. Output a compact next-cycle plan grouped as immediate, queueable, and defer." +
+                    Optional(args, "objective", " Objective: {0}.") +
+                    Optional(args, "riskTolerance", " Risk tolerance: {0}."))
             },
             new McpPrompt
             {
                 Name = "inspect_area",
-                Title = "检查区域",
-                Description = "分析指定地图区域，优先使用文本地图而不是截图。",
+                Title = "Inspect Area",
+                Description = "Analyze a map area, preferring text-map resources before screenshots.",
                 Arguments = new List<McpPromptArgument>
                 {
-                    new McpPromptArgument { Name = "x1", Title = "X1", Description = "左下 X。", Required = false },
-                    new McpPromptArgument { Name = "y1", Title = "Y1", Description = "左下 Y。", Required = false },
-                    new McpPromptArgument { Name = "x2", Title = "X2", Description = "右上 X。", Required = false },
-                    new McpPromptArgument { Name = "y2", Title = "Y2", Description = "右上 Y。", Required = false }
+                    new McpPromptArgument { Name = "x1", Title = "X1", Description = "Lower-left X coordinate.", Required = false },
+                    new McpPromptArgument { Name = "y1", Title = "Y1", Description = "Lower-left Y coordinate.", Required = false },
+                    new McpPromptArgument { Name = "x2", Title = "X2", Description = "Upper-right X coordinate.", Required = false },
+                    new McpPromptArgument { Name = "y2", Title = "Y2", Description = "Upper-right Y coordinate.", Required = false }
                 },
                 Builder = args => BuildResult(
-                    "区域检查流程",
-                    "先读取 oni://world/text-map?x1=" + Arg(args, "x1", "") + "&y1=" + Arg(args, "y1", "") + "&x2=" + Arg(args, "x2", "") + "&y2=" + Arg(args, "y2", "") + "&profile=scan。用 RLE 文本地图低 token 初扫地形和气液固分布；需要建筑、复制人、资源或每格明细时，再用同一 areaId 调 world_text_map 并打开 includeBuildings/includeDupes/includeItems/includeElements 或 detail=full。只有需要视觉确认时再调用截图工具。")
+                    "Area inspection workflow",
+                    "First read oni://world/text-map?x1=" + Arg(args, "x1", "") + "&y1=" + Arg(args, "y1", "") + "&x2=" + Arg(args, "x2", "") + "&y2=" + Arg(args, "y2", "") + "&profile=scan. Use the low-token RLE text map to scan terrain and gas/liquid/solid distribution. If you need buildings, dupes, resources, or per-cell detail, reuse the same areaId with world_text_map and enable includeBuildings, includeDupes, includeItems, includeElements, or detail=full. Use screenshots only when visual confirmation is needed.")
             },
             new McpPrompt
             {
                 Name = "dupe_care_review",
-                Title = "复制人照护检查",
-                Description = "检查复制人需求、压力、日程和技能配置。",
+                Title = "Duplicant Care Review",
+                Description = "Review duplicant needs, stress, schedules, and skill setup.",
                 Arguments = new List<McpPromptArgument>
                 {
-                    new McpPromptArgument { Name = "dupe", Title = "复制人", Description = "可选复制人姓名或 ID。", Required = false }
+                    new McpPromptArgument { Name = "dupe", Title = "Duplicant", Description = "Optional duplicant name or ID.", Required = false }
                 },
                 Builder = args => BuildResult(
-                    "复制人照护流程",
-                    "读取 oni://dupes 和 oni://schedules。若指定复制人，调用 dupes_detail、dupes_needs 和 dupes_attributes 获取细节。" +
-                    Optional(args, "dupe", " 指定复制人：{0}。") +
-                    " 输出照护风险、可调整日程、饮食和技能建议。")
+                    "Duplicant care workflow",
+                    "Read oni://dupes and oni://schedules. If a duplicant is specified, call dupes_detail, dupes_needs, and dupes_attributes for details." +
+                    Optional(args, "dupe", " Duplicant: {0}.") +
+                    " Output care risks plus schedule, diet, and skill recommendations.")
             },
             new McpPrompt
             {
                 Name = "power_audit",
-                Title = "电力审计",
-                Description = "检查殖民地电力系统健康度，发现供电缺口、电池耗尽风险和导线过载。",
+                Title = "Power Audit",
+                Description = "Check colony power health and find supply gaps, battery-drain risk, and wire overloads.",
                 Arguments = new List<McpPromptArgument>
                 {
-                    new McpPromptArgument { Name = "worldId", Title = "世界 ID", Description = "世界 ID，默认当前世界。", Required = false },
-                    new McpPromptArgument { Name = "detail", Title = "详情级别", Description = "详情级别：brief、summary、full，默认 summary。", Required = false }
+                    new McpPromptArgument { Name = "worldId", Title = "World ID", Description = "World ID; defaults to the current world.", Required = false },
+                    new McpPromptArgument { Name = "detail", Title = "Detail", Description = "Detail level: brief, summary, or full. Defaults to summary.", Required = false }
                 },
                 Builder = args => BuildResult(
-                    "电力审计流程",
-                    "先读取 oni://power/summary 获取整体电力状态。检查是否有 circuit 负载接近或超过 100%，检查电池电量是否偏低。" +
-                    Optional(args, "detail", " 详情级别：{0}。若该值为 full，再读取 oni://buildings/configurables 过滤电力相关建筑，获取详细配置。") +
-                    " 给出优化建议：增加发电、增加电池、减少负载、分电路。" +
-                    Optional(args, "worldId", " 世界 ID：{0}。"))
+                    "Power audit workflow",
+                    "Read oni://power/summary first for overall power state. Check whether any circuit load is near or above 100%, and whether battery charge is low." +
+                    Optional(args, "detail", " Detail level: {0}. If full, also read oni://buildings/configurables filtered to power-related buildings for detailed settings.") +
+                    " Recommend optimizations: add generation, add batteries, reduce load, or split circuits." +
+                    Optional(args, "worldId", " World ID: {0}."))
             },
             new McpPrompt
             {
                 Name = "rooms_overview",
-                Title = "房间概览",
-                Description = "检查殖民地房间系统状态，发现士气房间缺口和房间条件未满足的问题。",
+                Title = "Rooms Overview",
+                Description = "Check colony room status and find missing morale rooms or unmet room criteria.",
                 Arguments = new List<McpPromptArgument>
                 {
-                    new McpPromptArgument { Name = "worldId", Title = "世界 ID", Description = "世界 ID，默认当前世界。", Required = false },
-                    new McpPromptArgument { Name = "focus", Title = "关注点", Description = "关注点，例如 morale、bed、food、toilet、recreation。", Required = false }
+                    new McpPromptArgument { Name = "worldId", Title = "World ID", Description = "World ID; defaults to the current world.", Required = false },
+                    new McpPromptArgument { Name = "focus", Title = "Focus", Description = "Focus, for example morale, bed, food, toilet, or recreation.", Required = false }
                 },
                 Builder = args => BuildResult(
-                    "房间概览流程",
-                    "读取 oni://rooms/list 获取所有房间。检查是否有缺失的关键房间类型（Barracks、Great Hall、Washroom、Recreation 等），检查房间大小和条件是否满足。" +
-                    Optional(args, "focus", " 当前关注点：{0}。") +
-                    " 给出房间规划建议，优先补齐士气相关房间。" +
-                    Optional(args, "worldId", " 世界 ID：{0}。"))
+                    "Rooms overview workflow",
+                    "Read oni://rooms/list for all rooms. Check whether key room types are missing, such as Barracks, Great Hall, Washroom, and Recreation, and whether room size and criteria are satisfied." +
+                    Optional(args, "focus", " Focus: {0}.") +
+                    " Provide room-planning recommendations, prioritizing morale-related rooms." +
+                    Optional(args, "worldId", " World ID: {0}."))
             },
             new McpPrompt
             {
                 Name = "thermal_audit",
-                Title = "热管理审计",
-                Description = "扫描殖民地过热风险，发现即将过热的设备和高温区域。",
+                Title = "Thermal Audit",
+                Description = "Scan colony overheat risk and find equipment or areas that are becoming too hot.",
                 Arguments = new List<McpPromptArgument>
                 {
-                    new McpPromptArgument { Name = "worldId", Title = "世界 ID", Description = "世界 ID，默认当前世界。", Required = false },
-                    new McpPromptArgument { Name = "marginC", Title = "风险温差阈值", Description = "风险温差阈值，默认 15°C。", Required = false }
+                    new McpPromptArgument { Name = "worldId", Title = "World ID", Description = "World ID; defaults to the current world.", Required = false },
+                    new McpPromptArgument { Name = "marginC", Title = "Risk Margin C", Description = "Risk temperature margin in Celsius; defaults to 15.", Required = false }
                 },
                 Builder = args => BuildResult(
-                    "热管理审计流程",
-                    "读取 oni://thermal/overheat-risk?marginC=" + Arg(args, "marginC", "15") + " 扫描风险建筑。如果有 overheated 状态的设备，优先处理。" +
-                    " 检查高温区域的元素分布（可用 oni://world/elements 辅助）。" +
-                    " 给出降温建议：增加冷却、改善通风、使用隔热砖、移除热源。" +
-                    Optional(args, "worldId", " 世界 ID：{0}。"))
+                    "Thermal audit workflow",
+                    "Read oni://thermal/overheat-risk?marginC=" + Arg(args, "marginC", "15") + " to scan at-risk buildings. If any equipment is overheated, handle it first." +
+                    " Check element distribution in hot areas; oni://world/elements can help." +
+                    " Recommend cooling, ventilation, insulated tile, or heat-source removal." +
+                    Optional(args, "worldId", " World ID: {0}."))
             }
         };
 
         public static List<McpPromptInfo> GetPromptInfos()
         {
             return _prompts
-                .Select(prompt => new McpPromptInfo
+                .Select(prompt => EnglishMetadata.PromptInfo(new McpPromptInfo
                 {
                     Name = prompt.Name,
                     Title = prompt.Title,
                     Description = prompt.Description,
                     Arguments = prompt.Arguments
-                })
+                }))
                 .OrderBy(prompt => prompt.Name)
                 .ToList();
         }
@@ -151,7 +152,7 @@ namespace OniMcp.Tools
 
         private static GetPromptResult BuildResult(string description, string text)
         {
-            return new GetPromptResult
+            return EnglishMetadata.PromptResult(new GetPromptResult
             {
                 Description = description,
                 Messages = new List<PromptMessage>
@@ -162,7 +163,7 @@ namespace OniMcp.Tools
                         Content = new ToolContent { Type = "text", Text = text }
                     }
                 }
-            };
+            });
         }
 
         private static string Arg(Dictionary<string, string> args, string key, string fallback)

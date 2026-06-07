@@ -104,7 +104,7 @@ namespace OniMcp.Tools
                                 continue;
                             if (queuedOnly && fabricator.GetRecipeQueueCount(recipe) == 0)
                                 continue;
-                            if (!includeLocked && !recipe.IsRequiredTechOrPOIUnlocked())
+                            if (!includeLocked && !IsRequiredTechOrPoiUnlocked(recipe))
                                 continue;
                             if (!RecipeMatches(recipe, query))
                                 continue;
@@ -462,6 +462,24 @@ namespace OniMcp.Tools
             return result;
         }
 
+        private static bool IsRequiredTechOrPoiUnlocked(ComplexRecipe recipe)
+        {
+            if (recipe == null)
+                return false;
+            var method = OniReflection.GetMethodSafe(typeof(ComplexRecipe), "IsRequiredTechOrPOIUnlocked", false, Type.EmptyTypes);
+            if (method == null)
+                return true;
+            try
+            {
+                object value = method.Invoke(recipe, null);
+                return value is bool ? (bool)value : true;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         private static Dictionary<string, object> RecipeInfo(ComplexFabricator fabricator, ComplexRecipe recipe, bool includeFabricator)
         {
             var result = RecipeSummary(recipe);
@@ -472,7 +490,7 @@ namespace OniMcp.Tools
             result["timeSeconds"] = ToolUtil.SafeFloat(recipe.time);
             result["requiredTech"] = recipe.requiredTech;
             result["requiresTechUnlock"] = recipe.RequiresTechUnlock();
-            result["techOrPoiUnlocked"] = recipe.IsRequiredTechOrPOIUnlocked();
+            result["techOrPoiUnlocked"] = IsRequiredTechOrPoiUnlocked(recipe);
             result["requiresAllIngredientsDiscovered"] = recipe.RequiresAllIngredientsDiscovered;
             result["consumedHEP"] = recipe.consumedHEP;
             result["producedHEP"] = recipe.producedHEP;

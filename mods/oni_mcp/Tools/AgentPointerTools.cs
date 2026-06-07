@@ -693,6 +693,10 @@ namespace OniMcp.Tools
     public static class AgentPointerTools
     {
         private const float DisplayTextDurationSeconds = 8f;
+        private const float PointerJumpDefaultZoom = 8f;
+        private const float PointerJumpMinZoom = 6f;
+        private const float PointerJumpMaxZoom = 18f;
+        private const float PointerVisibleScreenMargin = 32f;
         private const string AgentIdDescription = "可选逻辑指针名；建议首次指针操作就选一个短而稳定的 agentId（如 planner、builder），并在后续所有 agent_pointer_* 调用中持续传入，让模型记住并复用同一个可视指针。省略时使用全局默认 agent 指针；不同 agentId 可并行显示多个指针。";
         private const string DisplayTextDescription = "可选显示文本，会立刻在指针旁短暂显示。建议在移动、选工具、点击、拖拽等可见动作中传入 6-40 字给玩家看的状态说明，例如“准备铺线”“标记挖掘”。";
 
@@ -1000,6 +1004,8 @@ namespace OniMcp.Tools
                     var pointer = RequirePointer(args["agentId"]?.ToString());
                     if (pointer.Error != null)
                         return CallToolResult.Error(pointer.Error);
+
+                    EnsurePointerVisible(pointer.State);
 
                     Grid.CellToXY(pointer.State.Cell, out int x, out int y);
                     var result = ExecuteSelectedTool(pointer.State, x, y, x, y, args, isDrag: false);
@@ -1588,12 +1594,48 @@ namespace OniMcp.Tools
             var pointer = AgentPointerRegistry.SetCell(ToolSessionContext.SessionId, agentId, worldId, targetX, targetY);
             if (ToolUtil.GetBool(args, "moveCamera", false))
             {
-                float zoom = ToolUtil.GetFloat(args, "zoom") ?? (Camera.main != null ? Camera.main.orthographicSize : 8f);
+                float zoom = NormalizeJumpZoom(ToolUtil.GetFloat(args, "zoom"), Camera.main != null ? Camera.main.orthographicSize : PointerJumpDefaultZoom);
                 CameraController.Instance?.SnapTo(new Vector3(targetX + 0.5f, targetY + 0.5f, -100f), zoom);
+                pointer.ToDictionary();
             }
             pointer.LastAction = "jump";
             ApplyDisplayText(args, agentId);
             return CallToolResult.Text(JsonConvert.SerializeObject(pointer.ToDictionary(), McpJsonUtil.Settings));
+        }
+
+        private static float NormalizeJumpZoom(float? requestedZoom, float fallbackZoom)
+        {
+            float zoom = requestedZoom ?? fallbackZoom;
+            if (float.IsNaN(zoom) || float.IsInfinity(zoom) || zoom <= 0f)
+                zoom = fallbackZoom > 0f ? fallbackZoom : PointerJumpDefaultZoom;
+
+            // Very small orthographic sizes make build workflows unusably zoomed in.
+            return Mathf.Clamp(zoom, PointerJumpMinZoom, PointerJumpMaxZoom);
+        }
+
+        private static void EnsurePointerVisible(AgentPointerState pointer)
+        {
+            if (pointer == null || !Grid.IsValidCell(pointer.Cell))
+                return;
+
+            pointer.ToDictionary();
+            if (IsPointerScreenVisible(pointer.ScreenPosition))
+                return;
+
+            float zoom = NormalizeJumpZoom(null, Camera.main != null ? Camera.main.orthographicSize : PointerJumpDefaultZoom);
+            CameraController.Instance?.SnapTo(new Vector3(pointer.WorldPosition.x, pointer.WorldPosition.y, -100f), zoom);
+            pointer.ToDictionary();
+        }
+
+        private static bool IsPointerScreenVisible(Vector2 screenPosition)
+        {
+            if (Screen.width <= 0 || Screen.height <= 0)
+                return true;
+
+            return screenPosition.x >= PointerVisibleScreenMargin
+                && screenPosition.x <= Screen.width - PointerVisibleScreenMargin
+                && screenPosition.y >= PointerVisibleScreenMargin
+                && screenPosition.y <= Screen.height - PointerVisibleScreenMargin;
         }
 
         private static void ApplyDisplayText(JObject args, string agentId)

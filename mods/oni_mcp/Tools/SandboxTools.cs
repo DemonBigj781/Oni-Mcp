@@ -857,7 +857,17 @@ namespace OniMcp.Tools
                     var affected = new List<Dictionary<string, object>>();
                     foreach (var dupe in dupes)
                     {
-                        var amount = Db.Get().Amounts.Stress.Lookup(dupe.gameObject);
+                        var amount = DupeNeedUtil.GetStressAmount(dupe);
+                        if (amount == null)
+                        {
+                            affected.Add(new Dictionary<string, object>
+                            {
+                                ["id"] = dupe.GetComponent<KPrefabID>()?.InstanceID ?? -1,
+                                ["name"] = dupe.GetProperName(),
+                                ["error"] = "stress amount not found"
+                            });
+                            continue;
+                        }
                         float before = amount.value;
                         amount.ApplyDelta(delta.Value);
                         affected.Add(new Dictionary<string, object>
