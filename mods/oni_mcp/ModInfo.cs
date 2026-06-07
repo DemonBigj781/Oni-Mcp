@@ -28,8 +28,7 @@ namespace OniMcp
             OniMcpOptions.Reload();
             PUtil.InitLibrary();
             Localization.RegisterForTranslation(typeof(STRINGS));
-            LocString.CreateLocStringKeys(typeof(STRINGS), null);
-            new PLocalization().Register();
+            new PLocalization().Register(assembly);
             new POptions().RegisterOptions(this, typeof(OniMcpOptions));
 
             // 注册 Harmony Patch
