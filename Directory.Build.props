@@ -3,7 +3,7 @@
   <!-- onim 自动生成的全局配置 -->
 
   <PropertyGroup>
-    <OniGamePath>/home/lightjunction/.local/share/Steam/steamapps/common/OxygenNotIncluded</OniGamePath>
+    <OniGamePath>/home/jack/.local/share/Steam/steamapps/common/OxygenNotIncluded</OniGamePath>
   </PropertyGroup>
 
   <PropertyGroup>
