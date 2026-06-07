@@ -250,7 +250,7 @@ namespace OniMcp.Tools
                     var heater = go.GetComponent<SpaceHeater>();
                     bool enabled = ToolUtil.GetBool(args, "enabled", heater.UserSliderSetting > 0f);
                     var before = TurboHeaterInfo(heater);
-                    heater.SetUserSpecifiedPowerConsumptionValue(enabled ? heater.maxPower : heater.minPower);
+                    heater.SetUserSpecifiedPowerConsumptionValue(enabled ? heater.MaxPower : heater.MinPower);
 
                     return JsonResult(new Dictionary<string, object>
                     {
@@ -388,9 +388,9 @@ namespace OniMcp.Tools
             result["turboMode"] = heater.UserSliderSetting > 0f;
             result["slider"] = Math.Round(ToolUtil.SafeFloat(heater.UserSliderSetting), 3);
             result["currentPowerW"] = Math.Round(ToolUtil.SafeFloat(heater.CurrentPowerConsumption), 3);
-            result["minPowerW"] = Math.Round(ToolUtil.SafeFloat(heater.minPower), 3);
-            result["maxPowerW"] = Math.Round(ToolUtil.SafeFloat(heater.maxPower), 3);
-            result["heatLiquid"] = heater.heatLiquid;
+            result["minPowerW"] = Math.Round(ToolUtil.SafeFloat(heater.MinPower), 3);
+            result["maxPowerW"] = Math.Round(ToolUtil.SafeFloat(heater.MaxPower), 3);
+            result["heatTargetTemperature"] = Math.Round(ToolUtil.SafeFloat(heater.TargetTemperature), 3);
             return result;
         }
 
@@ -472,7 +472,7 @@ namespace OniMcp.Tools
         private static bool IsTurboHeater(GameObject go)
         {
             var heater = go?.GetComponent<SpaceHeater>();
-            return heater != null && heater.heatLiquid;
+            return heater != null && heater.produceHeat;
         }
 
         private static bool IsSelfDestructTarget(GameObject go)
