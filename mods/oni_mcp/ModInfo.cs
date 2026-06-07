@@ -24,18 +24,20 @@ namespace OniMcp
         {
             base.OnLoad(harmony);
 
-            OniMcpPaths.Initialize(path, assembly);
+            var modAssembly = assembly ?? typeof(ModInfo).Assembly;
+
+            OniMcpPaths.Initialize(path, modAssembly);
             OniMcpOptions.Reload();
             PUtil.InitLibrary();
             Localization.RegisterForTranslation(typeof(STRINGS));
-            new PLocalization().Register(assembly);
+            new PLocalization().Register(modAssembly);
             new POptions().RegisterOptions(this, typeof(OniMcpOptions));
 
             // 注册 Harmony Patch
             harmony.PatchAll();
             InputSafetyPatchVerifier.EnsureInstalled(harmony, "OnLoad");
             AutoDisinfectPolicy.EnsureInstalled(harmony, "OnLoad");
-            OniMcpLog.Debug($"[OniMcp] Loaded assembly {assembly.GetName().Version} from {assembly.Location}");
+            OniMcpLog.Debug($"[OniMcp] Loaded assembly {modAssembly.GetName().Version} from {modAssembly.Location}");
 
             // 初始化 Tool 注册表
             OniToolRegistry.Initialize();
